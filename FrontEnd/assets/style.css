@@ -126,20 +126,26 @@ li:hover {
 	margin-bottom: 1em;
 }
 
-#portfolio-filters {
+.filters {
 	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 1%;
 }
 
-.filters{
+.filters button {
 	display: flex;
-    flex-direction: row;
-}
-
-.filter-text{
-    display: flex;
-    border: 2px;
-    padding : 7px;
     border-radius: 40px;
+    padding : 4px 10px 5px 10px;
+    border: 1px #1D6154 solid;
+	background-color: white;
+	margin-bottom: 3%;
+	font-weight: 600;
+}
+
+.filters button:hover{
+	color: white;
+	background: #1D6154;
 }
 
 .gallery {

@@ -1,32 +1,21 @@
-async function fetchWorks() {
-    const url = 'http://localhost:5678/api/works';
-    const galleryElement = document.querySelector('.gallery'); 
+import * as config from './config.js';
+
+export async function fetchWorks() {
+    const url = config.url_works;
 
     try {
         const response = await fetch(url);
 
-        if (!response.ok) {
-            throw new Error(`Erreur HTTP: ${response.status}`);
+        if (response.ok) {
+            const works = await response.json();
+            console.log(works);
+
+        createWorks(works);
+        return works;
+            
+        } else {
+            throw new Error(`Travaux non trouvés`);
         }
-
-        const works = await response.json();
-        console.log(works);
-
-        works.forEach(work => {
-            const workCard = document.createElement('div');
-
-            const image = document.createElement('img');
-            image.src = work.imageUrl;
-            image.alt = work.title; 
-
-            const title = document.createElement('h3');
-            title.textContent = work.title;
-
-            workCard.appendChild(image);
-            workCard.appendChild(title);
-
-            galleryElement.appendChild(workCard);
-        });
 
     } catch (error) {
         console.error('Erreur lors de la récupération des projets:', error);
@@ -34,3 +23,27 @@ async function fetchWorks() {
 }
 
 fetchWorks();
+
+export function createWorks (works){
+
+    const galleryElement = document.querySelector('.gallery'); 
+    galleryElement.innerHTML = '';
+
+    works.forEach(work => {
+        const figureCard = document.createElement('figure');
+
+        const image = document.createElement('img');
+        image.src = work.imageUrl;
+        image.alt = work.title; 
+        image.setAttribute('worksCategory-id', work.categoryId);
+
+        const title = document.createElement('figcaption');
+        title.textContent = work.title;
+
+        figureCard.appendChild(image);
+        figureCard.appendChild(title);
+
+        galleryElement.appendChild(figureCard);
+    });
+
+}
