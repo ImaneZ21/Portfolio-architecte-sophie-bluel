@@ -8,33 +8,27 @@ export async function fetchWorks() {
 
         if (response.ok) {
             const works = await response.json();
-            console.log(works);
-
-        createWorks(works);
-        return works;
-            
+            return works;
         } else {
-            throw new Error(`Travaux non trouvés`);
+            throw new Error(`Works non trouvés`, error);
         }
-
     } catch (error) {
         console.error('Erreur lors de la récupération des projets:', error);
     }
 }
 
-fetchWorks();
 
-export function createWorks (works){
+export function createWorks(works) {
 
-    const galleryElement = document.querySelector('.gallery'); 
+    const galleryElement = document.querySelector('.gallery');
     galleryElement.innerHTML = '';
 
-    works.forEach(work => {
+    works.forEach((work) => {
         const figureCard = document.createElement('figure');
 
         const image = document.createElement('img');
         image.src = work.imageUrl;
-        image.alt = work.title; 
+        image.alt = work.title;
         image.setAttribute('worksCategory-id', work.categoryId);
 
         const title = document.createElement('figcaption');
@@ -47,3 +41,5 @@ export function createWorks (works){
     });
 
 }
+const works = await fetchWorks();
+createWorks(works);
