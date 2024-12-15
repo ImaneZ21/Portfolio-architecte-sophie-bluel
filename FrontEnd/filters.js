@@ -65,8 +65,12 @@ function addEventListenersFilters() {
             const categoryId = button.getAttribute('data-category-id');
 
             if (categoryId !== 'all') {
+                document.querySelector(".gallery").innerHTML = "";
                 const filteredWorks = works.filter(work => work.categoryId === parseInt(categoryId));
                 createWorks(filteredWorks)
+            }else{
+                document.querySelector(".gallery").innerHTML = "";
+                createWorks(works)
             }
         });
     });
