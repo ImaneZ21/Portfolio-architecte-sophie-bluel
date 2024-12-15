@@ -9,7 +9,6 @@ async function fetchCategories() {
 
         if (response.ok) {
             const categories = await response.json();
-            console.log(categories);
 
             createFilters(categories);
 
