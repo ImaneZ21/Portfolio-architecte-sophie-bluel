@@ -246,6 +246,17 @@ a:hover {
 	margin-bottom: 0.5em;
 }
 
+/****edit****/
+
+.edit {
+	background-color: black;
+	color: white;
+	padding: 20px;
+	display: flex;
+	justify-content: center;
+	display: none;
+}
+
 .title {
 	display: flex;
 	flex-direction: row;
@@ -254,10 +265,20 @@ a:hover {
 	margin-bottom: 1em;
 }
 
-.title h2 {
-	flex: 1;
-	margin-top: 0
+.title h2{
+	margin-right: 2%;
 }
+
+.title h2, .title i, .title div {
+	margin-top: 5%
+}
+
+.title i, .button{
+	display: none;
+	margin-bottom: 2%;
+}
+
+/****Homepage***/
 
 
 .filters {

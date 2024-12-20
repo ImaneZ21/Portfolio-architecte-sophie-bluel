@@ -3,8 +3,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (token) {
         let filtersElement = document.querySelector('.portfolio-filters');
+        let editHeader = document.querySelector('.edit')
         filtersElement.style.display = 'none';
-
+        editHeader.style.display = 'flex';
+        
         logout();
 
         addModifyButton();
@@ -27,17 +29,14 @@ function logout() {
 
 //Permet d'ajouter le bouton modifier
 function addModifyButton() {
-    document.querySelector("#portfolio").innerHTML = `
-    <div class="title">
-        <h2>Mes Projets</h2>
-        <i class="fa-regular fa-pen-to-square"></i>
-        <div class="button">modifier</div>
-    </div>
-	<div class="gallery"></div>
-     `;
+    
+    let modifyFont = document.querySelector(".title i");
+    let modifyText = document.querySelector(".button");
+
+    modifyFont.style.display = 'unset',
+    modifyText.style.display = 'unset',
 
     openModal();
-
 
 }
 

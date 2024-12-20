@@ -20,6 +20,10 @@
 </head>
 
 <body>
+	<div class="edit">
+		<i class="fa-regular fa-pen-to-square"></i>
+		<div>mode édition</div>
+	</div>
 	<header>
 		<h1>Sophie Bluel <span>Architecte d'intérieur</span></h1>
 		<nav>
@@ -34,7 +38,7 @@
 	<main>
 		<section id="introduction">
 			<figure>
-				<img src="./assets/images/sophie-bluel.png" alt="">
+				<img src="./assets/images/sophie-bluel.png" alt="Image de sophie Bluel">
 			</figure>
 			<article>
 				<h2>Designer d'espace</h2>
@@ -48,12 +52,17 @@
 			</article>
 		</section>
 		<section id="portfolio">
-			<h2>Mes Projets</h2>
+			<div class="title">
+				<h2>Mes Projets</h2>
+				<i class="fa-regular fa-pen-to-square"></i>
+				<div class="button">modifier</div>
+			</div>
 			<!--modal-->
 			<dialog id="modal">
 				<button id="close">Fermer</button>
 				<p>Galerie photo</p>
 			</dialog>
+			<!--end modal-->
 			<div class="portfolio-filters"></div>
 			<div class="gallery"></div>
 		</section>
