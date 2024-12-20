@@ -1,4 +1,4 @@
-import * as config from './config.js';
+import * as config from "./config.js";
 import { createWorks } from "./gallery.js";
 import { fetchWorks } from "./gallery.js";
 
