@@ -6,7 +6,7 @@ document.addEventListener("DOMContentLoaded", () => {
         let editHeader = document.querySelector('.edit')
         filtersElement.style.display = 'none';
         editHeader.style.display = 'flex';
-        
+
         logout();
 
         addModifyButton();
@@ -15,7 +15,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 //Permet de modifier le bouton login en logout et d'être redirigé vers la page de connexion
 function logout() {
-    let login = document.getElementById('login');
+    const login = document.getElementById('login');
     login.id = 'logout';
     login.textContent = 'logout';
 
@@ -29,38 +29,60 @@ function logout() {
 
 //Permet d'ajouter le bouton modifier
 function addModifyButton() {
-    
-    let modifyFont = document.querySelector(".title i");
-    let modifyText = document.querySelector(".button");
 
-    modifyFont.style.display = 'unset',
-    modifyText.style.display = 'unset',
+    const modifyFont = document.querySelector(".title i");
+    const modifyText = document.querySelector(".button");
 
-    openModal();
+    //faire figurer le style
+    modifyFont.style.display = 'unset'
+    modifyText.style.display = 'unset'
+
+    //ouverture de la modale au click
+    document.querySelectorAll('.js-modal').forEach(a => {
+        a.addEventListener('click', openModal)
+    })
 
 }
+
+let modal = null
 
 //Permet d'ouvrir la modale
-function openModal() {
-    let modifyElement = document.querySelector('.button')
-    modifyElement.addEventListener("click", () => {
-        modal.showModal();
-    })
+function openModal(e) {
 
-    closeModal();
+    e.preventDefault()
+
+    //faire apparaitre la modale
+    const target = document.querySelector(e.target.getAttribute('href'));
+    target.style.display = 'flex'
+    target.setAttribute('aria-hidden', 'false')
+    target.setAttribute('aria-modal', 'true')
+    modal = target
+
+    // ajout évènement pour fermer la modale
+    modal.addEventListener('click', closeModal)
+    modal.querySelector('.js-modal-close').addEventListener('click', closeModal)
+    modal.querySelector('.js-modal-stop').addEventListener('click', stopPropagation)
+
 }
 
-function closeModal() {
-    let closeElement = document.querySelector('#close')
-    closeElement.addEventListener("click", () => {
-        modal.close();
-    })
+//Permet de fermer la modale
+function closeModal(e) {
+
+    if (modal === null) {
+        return
+    }
+    e.preventDefault()
+    modal.style.display = "none"
+    modal.setAttribute('aria-hidden', 'true')
+    modal.setAttribute('aria-modal', 'false')
+    modal.removeEventListener('click', closeModal)
+    modal.querySelector('.js-modal-close').removeEventListener('click', closeModal)
+    modal.querySelector('.js-modal-stop').removeEventListener('click', stopPropagation)
+
+    modal = null
 }
 
-
-
-
-
-
-
-
+// Empêcher de cliquer n'importe où pour fermer la modale
+function stopPropagation(e) {
+    e.stopPropagation()
+}

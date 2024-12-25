@@ -1,4 +1,4 @@
-import * as config from './config.js';
+import * as config from "./config.js";
 
 function form() {
     const form = document.querySelector("form");

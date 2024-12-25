@@ -55,14 +55,20 @@
 			<div class="title">
 				<h2>Mes Projets</h2>
 				<i class="fa-regular fa-pen-to-square"></i>
-				<div class="button">modifier</div>
+				<div class="button"><a href="#modal1" class="js-modal">modifier</a></div>
 			</div>
+
 			<!--modal-->
-			<dialog id="modal">
-				<button id="close">Fermer</button>
-				<p>Galerie photo</p>
-			</dialog>
+			<aside id="modal1" class="modal" aria-hidden="true" role="dialog" aria-labelledby="title-modal">
+				<div class="modal-wrapper js-modal-stop">
+					<div class="content-modal">
+						<h3 id="title-modal">Galerie photo</h3>
+						<div class="js-modal-close"><i class="fa-solid fa-x"></i></div>
+					</div>
+				</div>
+			</aside>
 			<!--end modal-->
+
 			<div class="portfolio-filters"></div>
 			<div class="gallery"></div>
 		</section>
