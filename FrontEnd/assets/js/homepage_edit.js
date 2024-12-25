@@ -1,3 +1,5 @@
+import * as config from "./config.js";
+
 document.addEventListener("DOMContentLoaded", () => {
     const token = localStorage.getItem("token");
 
@@ -41,7 +43,6 @@ function addModifyButton() {
     document.querySelectorAll('.js-modal').forEach(a => {
         a.addEventListener('click', openModal)
     })
-
 }
 
 let modal = null
@@ -63,6 +64,8 @@ function openModal(e) {
     modal.querySelector('.js-modal-close').addEventListener('click', closeModal)
     modal.querySelector('.js-modal-stop').addEventListener('click', stopPropagation)
 
+    displayWorks ();
+
 }
 
 //Permet de fermer la modale
@@ -70,19 +73,63 @@ function closeModal(e) {
 
     if (modal === null) {
         return
-    }
-    e.preventDefault()
-    modal.style.display = "none"
-    modal.setAttribute('aria-hidden', 'true')
-    modal.setAttribute('aria-modal', 'false')
-    modal.removeEventListener('click', closeModal)
-    modal.querySelector('.js-modal-close').removeEventListener('click', closeModal)
-    modal.querySelector('.js-modal-stop').removeEventListener('click', stopPropagation)
+    } else {
+        e.preventDefault()
+        modal.style.display = "none"
+        modal.setAttribute('aria-hidden', 'true')
+        modal.setAttribute('aria-modal', 'false')
+        modal.removeEventListener('click', closeModal)
+        modal.querySelector('.js-modal-close').removeEventListener('click', closeModal)
+        modal.querySelector('.js-modal-stop').removeEventListener('click', stopPropagation)
 
-    modal = null
+        modal = null
+    }
 }
 
 // Empêcher de cliquer n'importe où pour fermer la modale
 function stopPropagation(e) {
     e.stopPropagation()
+}
+
+async function fetchWorks() {
+    const url = config.url_works;
+
+    try {
+        const response = await fetch(url);
+
+        if (response.ok) {
+            const works = await response.json();
+            return works;
+        } else {
+            throw new Error(`Works non trouvés`, error);
+        }
+    } catch (error) {
+        console.error('Erreur lors de la récupération des projets:', error);
+    }
+}
+
+async function displayWorks (){
+    const works = await fetchWorks();
+
+        const galleryElement = document.querySelector('.works-modal');
+
+        galleryElement.innerHTML = '';
+    
+        works.forEach((work) => {
+            const figureCard = document.createElement('figure');
+    
+            const image = document.createElement('img');
+            image.src = work.imageUrl;
+            image.alt = work.title;
+
+            const trashCan = document.createElement('i');
+            trashCan.classList.add('fa-solid', 'fa-trash-can');
+
+
+            figureCard.appendChild(image);
+            figureCard.appendChild(trashCan);
+    
+            galleryElement.appendChild(figureCard);
+        });
+
 }
