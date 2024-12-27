@@ -311,6 +311,13 @@ a:hover {
 	align-items: center;
 }
 
+.content-modal2{
+	width: 100%;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
 .content-modal h3{
 	position: relative;
 	font-size: 30px;

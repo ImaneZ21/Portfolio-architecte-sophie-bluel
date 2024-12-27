@@ -15,7 +15,7 @@ async function fetchCategories() {
             addEventListenersFilters();
 
         } else {
-            throw new Error(`catégories non trouvées`, error);
+            throw new Error('catégories non trouvées', error);
         }
     }
     catch (error) {

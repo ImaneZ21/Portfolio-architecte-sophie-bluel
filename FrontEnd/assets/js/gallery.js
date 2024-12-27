@@ -26,6 +26,8 @@ export function createWorks(works) {
 
     works.forEach((work) => {
         const figureCard = document.createElement('figure');
+        figureCard.setAttribute('figure-id', work.id);
+
 
         const image = document.createElement('img');
         image.src = work.imageUrl;

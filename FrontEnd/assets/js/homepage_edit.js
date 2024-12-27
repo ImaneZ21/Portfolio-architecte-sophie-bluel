@@ -1,9 +1,17 @@
 import * as config from "./config.js";
 
-document.addEventListener("DOMContentLoaded", () => {
+//Permet de récupérer le token et vérifier sa validité
+function isTokenValid() {
     const token = localStorage.getItem("token");
+    if (token){
+        return true;
+    }
+    return false;
+}
 
-    if (token) {
+document.addEventListener("DOMContentLoaded", () => {
+
+    if (isTokenValid() === true) {
         let filtersElement = document.querySelector('.portfolio-filters');
         let editHeader = document.querySelector('.edit')
         filtersElement.style.display = 'none';
@@ -48,7 +56,7 @@ function addModifyButton() {
 let modal = null
 
 //Permet d'ouvrir la modale
-function openModal(e) {
+async function openModal(e) {
 
     e.preventDefault()
 
@@ -59,17 +67,27 @@ function openModal(e) {
     target.setAttribute('aria-modal', 'true')
     modal = target
 
+    //ajout des projets
+    await displayWorks();
+
+    //faire disparaitre la modale 2
+    const modal2 = document.querySelector(".content-modal2");
+    modal2.style.display = 'none'
+
+    //Transfert vers la seconde modale
+    modal.querySelector('.add-picture-modal').addEventListener('click', openModal2)
+
     // ajout évènement pour fermer la modale
-    modal.addEventListener('click', closeModal)
-    modal.querySelector('.js-modal-close').addEventListener('click', closeModal)
+    modal.addEventListener('click', closeModalButton)
+    modal.querySelector('.js-modal-close').addEventListener('click', closeModalButton)
     modal.querySelector('.js-modal-stop').addEventListener('click', stopPropagation)
 
-    displayWorks ();
-
+    //Event listener sur les trashCan
+    EventListenertoRemoveWorks();
 }
 
 //Permet de fermer la modale
-function closeModal(e) {
+function closeModalButton(e) {
 
     if (modal === null) {
         return
@@ -78,10 +96,11 @@ function closeModal(e) {
         modal.style.display = "none"
         modal.setAttribute('aria-hidden', 'true')
         modal.setAttribute('aria-modal', 'false')
-        modal.removeEventListener('click', closeModal)
-        modal.querySelector('.js-modal-close').removeEventListener('click', closeModal)
+        modal.removeEventListener('click', closeModalButton)
+        modal.querySelector('.js-modal-close').removeEventListener('click', closeModalButton)
         modal.querySelector('.js-modal-stop').removeEventListener('click', stopPropagation)
 
+        //réinitialiser la modale
         modal = null
     }
 }
@@ -91,6 +110,7 @@ function stopPropagation(e) {
     e.stopPropagation()
 }
 
+//Récupérer les projets
 async function fetchWorks() {
     const url = config.url_works;
 
@@ -108,28 +128,102 @@ async function fetchWorks() {
     }
 }
 
-async function displayWorks (){
+//Afficher les projets
+async function displayWorks() {
+
+    const galleryElement = document.querySelector('.works-modal');
+
     const works = await fetchWorks();
 
-        const galleryElement = document.querySelector('.works-modal');
+    galleryElement.innerHTML = '';
 
-        galleryElement.innerHTML = '';
-    
-        works.forEach((work) => {
-            const figureCard = document.createElement('figure');
-    
-            const image = document.createElement('img');
-            image.src = work.imageUrl;
-            image.alt = work.title;
+    works.forEach((work) => {
+        const figureCard = document.createElement('figure');
+        figureCard.setAttribute('data-id', work.id);
 
-            const trashCan = document.createElement('i');
-            trashCan.classList.add('fa-solid', 'fa-trash-can');
+        const image = document.createElement('img');
+        image.src = work.imageUrl;
+        image.alt = work.title;
+
+        const trashCan = document.createElement('i');
+        trashCan.classList.add('fa-solid', 'fa-trash-can');
 
 
-            figureCard.appendChild(image);
-            figureCard.appendChild(trashCan);
-    
-            galleryElement.appendChild(figureCard);
-        });
+        figureCard.appendChild(image);
+        figureCard.appendChild(trashCan);
 
+        galleryElement.appendChild(figureCard);
+    });
+
+}
+
+// Permet de supprimer un projet au clic
+function EventListenertoRemoveWorks() {
+    //parcours les poubelles pour placer les eventsListeners
+    const trashCans = document.querySelectorAll('.fa-solid.fa-trash-can');
+
+    trashCans.forEach((trashCan) => {
+    //récupérer ID depuis le parent figure
+    const trashCansParent = trashCan.closest('figure');
+    const trashCansParentId = trashCansParent.getAttribute('data-id');
+
+        //placer un eventListener 
+        trashCan.addEventListener('click', () => {
+            //appeler la fonction removeWorks en envoyant l'id
+            fetchRemoveWorks(trashCansParentId, trashCansParent);
+        })
+    })
+}
+
+//Permet de supprimer un projet
+async function fetchRemoveWorks(trashCansParentId, trashCansParent) {
+
+    const token = localStorage.getItem("token");
+    const url = config.url_remove_works;
+
+    try {
+        if (isTokenValid()) {
+            // Appel à l'API pour supprimer un projet
+            const response = await fetch((url) + trashCansParentId, {
+                method: 'DELETE',
+                headers: {
+                    'Accept': '*/*',
+                    'Authorization': `Bearer ${token}`,
+                },
+            });
+            console.log('Réponse du serveur:', response);
+
+            if (response.ok) {
+            //supprimer le works de la modale
+            trashCansParent.remove();
+            console.log('supprimé : ', trashCansParent)
+            //supprimer le works de la homepage
+            const gallery = document.querySelector('.gallery');
+            const figureCard = gallery.querySelector('.figure-id');
+            figureCard.remove();
+            console.log('Supprimé de la galerie de la homepage');
+            console.log(figureCard);
+
+            } else {
+                console.log('Impossible de supprimer');
+            }
+        } else {
+            throw new Error('Token non trouvé');
+        }
+    } catch (error) {
+        console.log('Erreur lors de la suppression', error);
+    }
+}
+
+//fonction qui permet d'ouvrir la modale 2
+function openModal2() {
+    //faire apparaitre la modale 2
+    const modal2 = document.querySelector(".content-modal2");
+    modal2.style.display = 'flex';
+
+    //faire disparaitre la modale 1
+    const target = document.querySelector('.content-modal');
+    target.style.display = 'none';
+
+    modal2.querySelector('.js-modal-close').addEventListener('click', closeModalButton)
 }
