@@ -3,7 +3,7 @@ import * as config from "./config.js";
 //Permet de récupérer le token et vérifier sa validité
 function isTokenValid() {
     const token = localStorage.getItem("token");
-    if (token){
+    if (token) {
         return true;
     }
     return false;
@@ -163,9 +163,9 @@ function EventListenertoRemoveWorks() {
     const trashCans = document.querySelectorAll('.fa-solid.fa-trash-can');
 
     trashCans.forEach((trashCan) => {
-    //récupérer ID depuis le parent figure
-    const trashCansParent = trashCan.closest('figure');
-    const trashCansParentId = trashCansParent.getAttribute('data-id');
+        //récupérer ID depuis le parent figure
+        const trashCansParent = trashCan.closest('figure');
+        const trashCansParentId = trashCansParent.getAttribute('data-id');
 
         //placer un eventListener 
         trashCan.addEventListener('click', () => {
@@ -177,7 +177,6 @@ function EventListenertoRemoveWorks() {
 
 //Permet de supprimer un projet
 async function fetchRemoveWorks(trashCansParentId, trashCansParent) {
-
     const token = localStorage.getItem("token");
     const url = config.url_remove_works;
 
@@ -191,18 +190,16 @@ async function fetchRemoveWorks(trashCansParentId, trashCansParent) {
                     'Authorization': `Bearer ${token}`,
                 },
             });
-            console.log('Réponse du serveur:', response);
 
             if (response.ok) {
-            //supprimer le works de la modale
-            trashCansParent.remove();
-            console.log('supprimé : ', trashCansParent)
-            //supprimer le works de la homepage
-            const gallery = document.querySelector('.gallery');
-            const figureCard = gallery.querySelector('.figure-id');
-            figureCard.remove();
-            console.log('Supprimé de la galerie de la homepage');
-            console.log(figureCard);
+                //supprimer le works de la modale
+                trashCansParent.remove();
+                //supprimer le works de la homepage
+                const gallery = document.querySelector('.gallery');
+                const figureCard = gallery.querySelector('.figure-id');
+                figureCard.remove();
+                console.log('Supprimé de la galerie de la homepage');
+                console.log(figureCard);
 
             } else {
                 console.log('Impossible de supprimer');
@@ -226,4 +223,63 @@ function openModal2() {
     target.style.display = 'none';
 
     modal2.querySelector('.js-modal-close').addEventListener('click', closeModalButton)
+
+    //fonction qui permet d'envoyer le formulaire à l'api
+    postDataWorks();
+
+}
+
+function postDataWorks() {
+    const form = document.getElementById("formWorks");
+    const token = localStorage.getItem("token");
+
+    form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        // Récupérer les valeurs du formulaire
+        const title = document.getElementById("title").value.trim();
+        const imageFile = document.getElementById("image").files[0];  // Image en format fichier
+        const category = parseInt(document.getElementById("category").value.trim(), 10);
+
+        // Afficher l'image prévisualisée
+       const reader = new FileReader();
+        reader.onload = function (e) {
+            const imagePreview = document.getElementById("imagePreviewImg");
+            imagePreview.src = e.target.result;
+            imagePreview.style.display = "flex";
+        };
+        reader.readAsDataURL(imageFile); 
+
+        // Création de l'objet
+        const formData = new FormData();
+        formData.append("title", title);
+        formData.append("category", category);
+        formData.append("image", imageFile);
+
+        try {
+            // Envoyer la requête POST
+            const response = await fetch('http://localhost:5678/api/works', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                },
+                body: formData,
+            });
+
+            // Traiter la réponse
+            if (response.ok) {
+                const result = await response.json();
+                document.getElementById("output").textContent = "Données envoyées avec succès !";
+                console.log("Réponse de l'API :", result);
+                window.location.href = './index.html';
+
+            } else {
+                const error = await response.json();
+                document.getElementById("output").textContent = "Erreur lors de l'envoi des données.";
+                console.error("Erreur API :", error);
+            }
+        } catch (error) {
+            document.getElementById("output").textContent = "Une erreur s'est produite.";
+        }
+    });
 }

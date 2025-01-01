@@ -1,7 +1,7 @@
 import * as config from "./config.js";
 
-function form() {
-    const form = document.querySelector("form");
+function loginForm() {
+    const form = document.querySelector("#form-login");
 
     form.addEventListener("submit", (event) => {
         //Empêchement du rechargement de la page
@@ -12,8 +12,6 @@ function form() {
         const getPassword = document.getElementById("password");
         email = getEmail.value.trim();
         password = getPassword.value.trim();
-
-        
 
         //Vérification du contenu
         if (email === "" || password === "") {
@@ -34,7 +32,7 @@ function form() {
     });
 }
 
-form()
+loginForm()
 
 //Permet de vérifier la validité du login
 function checkLogin(email, password) {
@@ -79,7 +77,9 @@ async function postData() {
             //récupération du token
             const dataLogin = await response.json();
             const token = dataLogin.token;
+            const userId = dataLogin.userId;
             window.localStorage.setItem("token", token);
+            window.localStorage.setItem('user', userId );
 
             //redirection
             window.location.href = './index.html';
@@ -92,3 +92,4 @@ async function postData() {
         alert("erreur liée à l'api");
     }
 }
+

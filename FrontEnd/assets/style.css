@@ -330,6 +330,7 @@ a:hover {
 	font-weight: 700;
 	left: 280px;
 	bottom: 50px;
+	font-size: large;
 }
 
 .works-modal {
@@ -358,6 +359,30 @@ a:hover {
 	position: relative;
 	bottom: 110px;
 	left: 60px;
+}
+
+.content-modal2 h3{
+	position: relative;
+	font-size: 30px;
+	margin-top: 5%;
+}
+
+.fa-arrow-left{
+	cursor: pointer;
+	position: relative;
+	right: 280px;
+	bottom: 70px;
+	font-size: large;
+}
+
+.modal-btn-add-picture{
+	padding: 40px;
+	z-index: 0
+}
+
+#new-works{
+	opacity: 0;
+	z-index: 1
 }
 
 /****Homepage***/

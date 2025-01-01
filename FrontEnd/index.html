@@ -61,7 +61,7 @@
 			<aside id="modal1" class="modal" aria-hidden="true" role="dialog" aria-labelledby="title-modal">
 				<div class="modal-wrapper js-modal-stop">
 					<div class="content-modal">
-						<h3 id="title-modal">Galerie photo</h3>
+						<h3 id="title-modal">Galeries photo</h3>
 						<div class="js-modal-close"><i class="fa-solid fa-x"></i></div>
 						<div class="works-modal"></div>
 						<input type="submit" class="add-picture-modal" value="Ajouter une photo">
@@ -69,7 +69,31 @@
 					<div class="content-modal2">
 						<h3 id="title-modal">Ajout photo</h3>
 						<div class="js-modal-close"><i class="fa-solid fa-x"></i></div>
-						<input type="submit" class="add-picture-modal" value="Valider">
+						<div class="modal-goback"><i class="fa-sharp fa-solid fa-arrow-left"></i></div>
+						<form enctype="multipart/form-data" method="post" id="formWorks">
+							<button class="modal-btn-add-picture">
+								<input type="file" id="image" name="image" accept="image/png, image/jpeg"
+									required>
+								<div id="image">
+									<img id="imagePreview" src="" alt="imagePreview"
+										style="max-width: 200px; display: none;">
+								</div>
+								<p>+ ajout des photos</p>
+								<p>jpg. png: 4mo max</p>
+							</button>
+							<label for="text">Titre</label>
+							<input type="text" name="title" id="title" required>
+							<label for="category">Catégorie</label>
+							<select name="category" id="category" required>
+								<option value=""></option>
+								<option value="1">Objets</option>
+								<option value="2">Appartements</option>
+								<option value="3">Hotels & restaurants</option>
+							</select>
+							<input type="submit" method="post" class="add-picture-modal" value="Valider">
+						</form>
+
+						<div id="output"></div>
 					</div>
 				</div>
 			</aside>
@@ -80,7 +104,7 @@
 		<section id="contact">
 			<h2>Contact</h2>
 			<p>Vous avez un projet ? Discutons-en !</p>
-			<form action="#" method="post">
+			<form action="#" method="post" id="form-contact">
 				<label for="name">Nom</label>
 				<input type="text" name="name" id="name">
 				<label for="email">Email</label>
