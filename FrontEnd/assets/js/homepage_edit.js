@@ -10,7 +10,6 @@ function isTokenValid() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-
     if (isTokenValid() === true) {
         let filtersElement = document.querySelector('.portfolio-filters');
         let editHeader = document.querySelector('.edit')
@@ -39,7 +38,6 @@ function logout() {
 
 //Permet d'ajouter le bouton modifier
 function addModifyButton() {
-
     const modifyFont = document.querySelector(".title i");
     const modifyText = document.querySelector(".button");
 
@@ -57,7 +55,6 @@ let modal = null
 
 //Permet d'ouvrir la modale
 async function openModal(e) {
-
     e.preventDefault()
 
     //faire apparaitre la modale
@@ -88,7 +85,6 @@ async function openModal(e) {
 
 //Permet de fermer la modale
 function closeModalButton(e) {
-
     if (modal === null) {
         return
     } else {
@@ -130,13 +126,13 @@ async function fetchWorks() {
 
 //Afficher les projets
 async function displayWorks() {
-
     const galleryElement = document.querySelector('.works-modal');
-
     const works = await fetchWorks();
 
+    //réinitialiser les projets
     galleryElement.innerHTML = '';
 
+    //création des projets
     works.forEach((work) => {
         const figureCard = document.createElement('figure');
         figureCard.setAttribute('data-id', work.id);
@@ -161,22 +157,24 @@ async function displayWorks() {
 function EventListenertoRemoveWorks() {
     //parcours les poubelles pour placer les eventsListeners
     const trashCans = document.querySelectorAll('.fa-solid.fa-trash-can');
+    const figcaption = document.querySelector('figcaption')
 
     trashCans.forEach((trashCan) => {
         //récupérer ID depuis le parent figure
         const trashCansParent = trashCan.closest('figure');
+        const figcaptionParent = figcaption.closest('figure');
         const trashCansParentId = trashCansParent.getAttribute('data-id');
 
         //placer un eventListener 
         trashCan.addEventListener('click', () => {
             //appeler la fonction removeWorks en envoyant l'id
-            fetchRemoveWorks(trashCansParentId, trashCansParent);
+            fetchRemoveWorks(trashCansParentId, trashCansParent, figcaptionParent);
         })
     })
 }
 
 //Permet de supprimer un projet
-async function fetchRemoveWorks(trashCansParentId, trashCansParent) {
+async function fetchRemoveWorks(trashCansParentId, trashCansParent, figcaptionParent) {
     const token = localStorage.getItem("token");
     const url = config.url_remove_works;
 
@@ -195,11 +193,7 @@ async function fetchRemoveWorks(trashCansParentId, trashCansParent) {
                 //supprimer le works de la modale
                 trashCansParent.remove();
                 //supprimer le works de la homepage
-                const gallery = document.querySelector('.gallery');
-                const figureCard = gallery.querySelector('.figure-id');
-                figureCard.remove();
-                console.log('Supprimé de la galerie de la homepage');
-                console.log(figureCard);
+                figcaptionParent.remove();
 
             } else {
                 console.log('Impossible de supprimer');
@@ -211,6 +205,7 @@ async function fetchRemoveWorks(trashCansParentId, trashCansParent) {
         console.log('Erreur lors de la suppression', error);
     }
 }
+
 
 //fonction qui permet d'ouvrir la modale 2
 function openModal2() {
@@ -224,31 +219,28 @@ function openModal2() {
 
     modal2.querySelector('.js-modal-close').addEventListener('click', closeModalButton)
 
-    //fonction qui permet d'envoyer le formulaire à l'api
+    // Envoyer le formulaire à l'api
     postDataWorks();
 
 }
 
+//Permet d'envoyer les informations du formulaire à l'api et de créer les nouveaux projets
 function postDataWorks() {
-    const form = document.getElementById("formWorks");
+    const formWorks = document.getElementById("formWorks");
     const token = localStorage.getItem("token");
+    const url = config.url_works;
 
-    form.addEventListener("submit", async (event) => {
+    //prévisualisation de l'image
+    previsualisationImage();
+
+    //Event listener sur le bouton submit
+    formWorks.addEventListener("submit", async (event) => {
         event.preventDefault();
 
         // Récupérer les valeurs du formulaire
         const title = document.getElementById("title").value.trim();
-        const imageFile = document.getElementById("image").files[0];  // Image en format fichier
-        const category = parseInt(document.getElementById("category").value.trim(), 10);
-
-        // Afficher l'image prévisualisée
-       const reader = new FileReader();
-        reader.onload = function (e) {
-            const imagePreview = document.getElementById("imagePreviewImg");
-            imagePreview.src = e.target.result;
-            imagePreview.style.display = "flex";
-        };
-        reader.readAsDataURL(imageFile); 
+        const imageFile = document.getElementById("image").files[0];
+        const category = parseInt(document.getElementById("category").value.trim());
 
         // Création de l'objet
         const formData = new FormData();
@@ -258,7 +250,7 @@ function postDataWorks() {
 
         try {
             // Envoyer la requête POST
-            const response = await fetch('http://localhost:5678/api/works', {
+            const response = await fetch((url), {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -266,20 +258,67 @@ function postDataWorks() {
                 body: formData,
             });
 
-            // Traiter la réponse
             if (response.ok) {
-                const result = await response.json();
-                document.getElementById("output").textContent = "Données envoyées avec succès !";
-                console.log("Réponse de l'API :", result);
+                //Redirection vers la homepage
                 window.location.href = './index.html';
-
             } else {
-                const error = await response.json();
-                document.getElementById("output").textContent = "Erreur lors de l'envoi des données.";
-                console.error("Erreur API :", error);
+                throw new Error(" Echec liée au formulaire");
             }
         } catch (error) {
-            document.getElementById("output").textContent = "Une erreur s'est produite.";
+            alert("erreur liée à l'api");
         }
     });
+    
+    //modifier la couleur du boutton de validation
+    document.getElementById("image").addEventListener("change", colorValidationButton);
+    document.getElementById("title").addEventListener("input", colorValidationButton);
+    document.getElementById("category").addEventListener("change", colorValidationButton);
+}
+
+//permet de prévisualider l'image 
+function previsualisationImage() {
+    const imageInput = document.getElementById("image");
+    const imagePreview = document.getElementById("imagePreviewImg");
+
+    imageInput.addEventListener("change", () => {
+
+        const imageFile = document.getElementById("image").files[0];
+        const addPictureButton = document.getElementById("add-picture");
+        const paragraph = document.getElementById("file-info");
+        const errorElement = document.querySelector(".error-messages")
+
+
+        if (imageFile.size > 4 * 1024 * 1024) { 
+            errorElement.style.display = 'unset',
+            errorElement.textContent = "Le fichier doit contenir 4mo max";
+            return;
+        }
+
+        if (imageFile) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                imagePreview.src = e.target.result;
+                imagePreview.style.display = "flex";
+            };
+            reader.readAsDataURL(imageFile);
+
+            addPictureButton.style.display = "none";
+            paragraph.style.display = "none";
+
+        } else {
+            imagePreview.src = "";
+            imagePreview.style.display = "none";
+        }
+    });
+}
+
+function colorValidationButton() {
+    const image = document.getElementById("image");
+    const title = document.getElementById("title");
+    const category = document.getElementById("category");
+    const validateButton = document.querySelector("form .add-picture-modal[type='submit']");
+
+    if (image.files && image.files.length > 0 && title.value.trim().length > 0 && category.value.trim().length > 0) {
+        validateButton.style.backgroundColor = "#1D6154";
+    }
 }

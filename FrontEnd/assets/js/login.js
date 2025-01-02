@@ -1,9 +1,9 @@
 import * as config from "./config.js";
 
 function loginForm() {
-    const form = document.querySelector("#form-login");
+    const formLogin = document.querySelector("#form-login");
 
-    form.addEventListener("submit", (event) => {
+    formLogin.addEventListener("submit", (event) => {
         //Empêchement du rechargement de la page
         event.preventDefault();
 

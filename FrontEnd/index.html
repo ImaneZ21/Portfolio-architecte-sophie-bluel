@@ -71,16 +71,14 @@
 						<div class="js-modal-close"><i class="fa-solid fa-x"></i></div>
 						<div class="modal-goback"><i class="fa-sharp fa-solid fa-arrow-left"></i></div>
 						<form enctype="multipart/form-data" method="post" id="formWorks">
-							<button class="modal-btn-add-picture">
-								<input type="file" id="image" name="image" accept="image/png, image/jpeg"
-									required>
-								<div id="image">
-									<img id="imagePreview" src="" alt="imagePreview"
-										style="max-width: 200px; display: none;">
+							<div class="modal-btn-add-picture">
+								<input type="file" id="image" name="image" accept="image/png, image/jpeg"  required>
+								<label for="image" id="add-picture">+ Ajouter photos</label>
+								<div id="imagePreview">
+									<img id="imagePreviewImg" src="" alt="imagePreview">
 								</div>
-								<p>+ ajout des photos</p>
-								<p>jpg. png: 4mo max</p>
-							</button>
+								<p id="file-info">jpg. png: 4mo max</p>
+							</div>
 							<label for="text">Titre</label>
 							<input type="text" name="title" id="title" required>
 							<label for="category">Catégorie</label>
@@ -90,10 +88,9 @@
 								<option value="2">Appartements</option>
 								<option value="3">Hotels & restaurants</option>
 							</select>
-							<input type="submit" method="post" class="add-picture-modal" value="Valider">
+							<input type="submit" class="add-picture-modal" value="Valider">
+							<div class="error-messages"></div>
 						</form>
-
-						<div id="output"></div>
 					</div>
 				</div>
 			</aside>
