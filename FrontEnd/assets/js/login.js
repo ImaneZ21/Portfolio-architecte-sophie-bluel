@@ -18,6 +18,7 @@ function loginForm() {
             const errorElement = document.querySelector(".error-messages")
             errorElement.style.display = 'unset',
             errorElement.textContent = "Le champ email ou mot de passe est vide.";
+
             return;
         }
 
@@ -36,17 +37,22 @@ loginForm()
 
 //Permet de vérifier la validité du login
 function checkLogin(email, password) {
+    //Vérification E-mail
     let regex = new RegExp("^[a-z0-9._-]+@[a-z0-9._-]+\.[a-z]+$");
     const errorElement = document.querySelector(".error-messages")
     if (!regex.test(email)) {
         errorElement.style.display = 'unset',
         errorElement.textContent = "Adresse mail eronnée";
+
         return false;
     }
+
+    //vérification password
     regex = new RegExp("^[a-zA-Z0-9._-]{5,}$")
     if (!regex.test(password)) {
         errorElement.style.display = 'unset',
         errorElement.textContent = "Le mot de passe doit contenir au moins 6 caractères, uniquement des lettres (majuscules et minuscules), des chiffres, des points, des underscores ou des tirets";
+
         return false;
     }
 

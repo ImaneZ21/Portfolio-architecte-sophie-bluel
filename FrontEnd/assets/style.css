@@ -326,7 +326,6 @@ a:hover {
 	font-size: large;
 }
 
-
 .works-modal {
 	width: 80%;
 	display: grid;
@@ -349,13 +348,6 @@ a:hover {
 	margin: 0
 }
 
-.content-modal2{
-	width: 100%;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-}
-
 .fa-trash-can{
 	background-color: black;
 	color: #fff;
@@ -363,6 +355,13 @@ a:hover {
 	position: relative;
 	bottom: 110px;
 	left: 60px;
+}
+
+.content-modal2{
+	width: 100%;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 
 .content-modal2 h3{
@@ -379,36 +378,40 @@ a:hover {
 	font-size: large;
 }
 
-.modal-btn-add-picture{
+.modal-add-picture{
 	padding-right: 150px;
 	padding-left: 150px;
-	border: 2px aliceblue ;
-	background-color:aliceblue;
+	border: 2px #e8f1f7 ;
+	background-color: #e8f1f7;
+	justify-content: center;
 }
 
 #add-picture{
 	padding: 20px;
-	background-color:cornflowerblue;
+	cursor: pointer;
+	background-color: #d0d7df;	
 	border-radius: 30px;
-	color: darkblue;
+	font-size: 14px;
 }
 
 #image{
 	position: absolute !important;
 	height: 1px;
 	width: 1px;
-	overflow: hidden;
-	clip: rect(1px, 1px, 1px, 1px);
+}
+
+.file-info{
+	margin-top: 10px;
+	font-size: 12px;
+	color: #7a8c99;
+}
+
+#imagePreviewImg{
+	width: 135px;
 }
 
 form .add-picture-modal[type="submit"] {
 	background-color: gray;
-}
-
-#imagePreviewImg{
-	display: none;
-	width: 135px;
-	justify-content: center;
 }
 
 form select, 

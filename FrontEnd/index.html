@@ -60,23 +60,23 @@
 			<!--modal -->
 			<aside id="modal1" class="modal" aria-hidden="true" role="dialog" aria-labelledby="title-modal">
 				<div class="modal-wrapper js-modal-stop">
+					<!--modal1-->
 					<div class="content-modal">
 						<h3 id="title-modal">Galeries photo</h3>
 						<div class="js-modal-close"><i class="fa-solid fa-x"></i></div>
 						<div class="works-modal"></div>
 						<input type="submit" class="add-picture-modal" value="Ajouter une photo">
 					</div>
+					<!--modal2-->
 					<div class="content-modal2">
 						<h3 id="title-modal">Ajout photo</h3>
 						<div class="js-modal-close"><i class="fa-solid fa-x"></i></div>
 						<div class="modal-goback"><i class="fa-sharp fa-solid fa-arrow-left"></i></div>
 						<form enctype="multipart/form-data" method="post" id="formWorks">
-							<div class="modal-btn-add-picture">
+							<div class="modal-add-picture">
 								<input type="file" id="image" name="image" accept="image/png, image/jpeg"  required>
+								<img id="imagePreviewImg" src="./assets/icons/placeholder.png" alt="imagePreview">
 								<label for="image" id="add-picture">+ Ajouter photos</label>
-								<div id="imagePreview">
-									<img id="imagePreviewImg" src="" alt="imagePreview">
-								</div>
 								<p id="file-info">jpg. png: 4mo max</p>
 							</div>
 							<label for="text">Titre</label>

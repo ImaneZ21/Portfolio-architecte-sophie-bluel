@@ -57,7 +57,7 @@ let modal = null
 async function openModal(e) {
     e.preventDefault()
 
-    //faire apparaitre la modale
+    //faire apparaitre la modale 1
     const target = document.querySelector(e.target.getAttribute('href'));
     target.style.display = 'flex'
     target.setAttribute('aria-hidden', 'false')
@@ -86,7 +86,7 @@ async function openModal(e) {
 //Permet de fermer la modale
 function closeModalButton(e) {
     if (modal === null) {
-        return
+        return;
     } else {
         e.preventDefault()
         modal.style.display = "none"
@@ -157,31 +157,34 @@ async function displayWorks() {
 function EventListenertoRemoveWorks() {
     //parcours les poubelles pour placer les eventsListeners
     const trashCans = document.querySelectorAll('.fa-solid.fa-trash-can');
-    const figcaption = document.querySelector('figcaption')
 
     trashCans.forEach((trashCan) => {
-        //récupérer ID depuis le parent figure
-        const trashCansParent = trashCan.closest('figure');
-        const figcaptionParent = figcaption.closest('figure');
-        const trashCansParentId = trashCansParent.getAttribute('data-id');
-
         //placer un eventListener 
         trashCan.addEventListener('click', () => {
             //appeler la fonction removeWorks en envoyant l'id
-            fetchRemoveWorks(trashCansParentId, trashCansParent, figcaptionParent);
+            RemoveWorks(trashCan);
         })
     })
 }
 
 //Permet de supprimer un projet
-async function fetchRemoveWorks(trashCansParentId, trashCansParent, figcaptionParent) {
+async function RemoveWorks(trashCan) {
     const token = localStorage.getItem("token");
     const url = config.url_remove_works;
 
+    // Retrouver l'ID du parent dans la modale
+    const modalFigure = trashCan.closest('figure');
+    const modalFigureId = modalFigure.getAttribute('data-id');
+
+    // Retrouve l'ID du parent dans la gallery
+    const workFigure = document.querySelector(
+        'figure[figure-id="' + modalFigureId + '"]'
+    );
+    
     try {
         if (isTokenValid()) {
             // Appel à l'API pour supprimer un projet
-            const response = await fetch((url) + trashCansParentId, {
+            const response = await fetch((url) + modalFigureId, {
                 method: 'DELETE',
                 headers: {
                     'Accept': '*/*',
@@ -190,10 +193,17 @@ async function fetchRemoveWorks(trashCansParentId, trashCansParent, figcaptionPa
             });
 
             if (response.ok) {
-                //supprimer le works de la modale
-                trashCansParent.remove();
-                //supprimer le works de la homepage
-                figcaptionParent.remove();
+
+            
+                if (modalFigureId) {
+                    modalFigure.remove();
+                }
+
+                if (workFigure) {
+                    workFigure.remove();
+                    console.log(workFigure);
+                    console.log('yes')
+                }
 
             } else {
                 console.log('Impossible de supprimer');
@@ -209,19 +219,19 @@ async function fetchRemoveWorks(trashCansParentId, trashCansParent, figcaptionPa
 
 //fonction qui permet d'ouvrir la modale 2
 function openModal2() {
-    //faire apparaitre la modale 2
-    const modal2 = document.querySelector(".content-modal2");
-    modal2.style.display = 'flex';
-
     //faire disparaitre la modale 1
     const target = document.querySelector('.content-modal');
     target.style.display = 'none';
 
-    modal2.querySelector('.js-modal-close').addEventListener('click', closeModalButton)
+    //faire apparaitre la modale 2
+    const modal2 = document.querySelector(".content-modal2");
+    modal2.style.display = 'flex';
 
     // Envoyer le formulaire à l'api
     postDataWorks();
 
+    //fermer la modale 2
+    modal2.querySelector('.js-modal-close').addEventListener('click', closeModalButton)
 }
 
 //Permet d'envoyer les informations du formulaire à l'api et de créer les nouveaux projets
@@ -268,7 +278,7 @@ function postDataWorks() {
             alert("erreur liée à l'api");
         }
     });
-    
+
     //modifier la couleur du boutton de validation
     document.getElementById("image").addEventListener("change", colorValidationButton);
     document.getElementById("title").addEventListener("input", colorValidationButton);
@@ -280,20 +290,25 @@ function previsualisationImage() {
     const imageInput = document.getElementById("image");
     const imagePreview = document.getElementById("imagePreviewImg");
 
-    imageInput.addEventListener("change", () => {
 
+    //Event Listener lorsque les valeurs du formulaire sont modifiées
+    imageInput.addEventListener("change", () => {
         const imageFile = document.getElementById("image").files[0];
         const addPictureButton = document.getElementById("add-picture");
         const paragraph = document.getElementById("file-info");
-        const errorElement = document.querySelector(".error-messages")
+        const errorElement = document.querySelector(".error-messages");
 
+        // Réinitialisez les erreurs
+        errorElement.style.display = "none";
 
-        if (imageFile.size > 4 * 1024 * 1024) { 
+        //contrôle sur la taille de l'image
+        if (imageFile.size > 4 * 1024 * 1024) {
             errorElement.style.display = 'unset',
-            errorElement.textContent = "Le fichier doit contenir 4mo max";
+                errorElement.textContent = "Le fichier doit contenir 4mo max";
             return;
         }
 
+        //rendre visible l'image
         if (imageFile) {
             const reader = new FileReader();
             reader.onload = function (e) {
@@ -306,7 +321,7 @@ function previsualisationImage() {
             paragraph.style.display = "none";
 
         } else {
-            imagePreview.src = "";
+
             imagePreview.style.display = "none";
         }
     });
