@@ -180,9 +180,9 @@ async function RemoveWorks(trashCan) {
     const workFigure = document.querySelector(
         'figure[figure-id="' + modalFigureId + '"]'
     );
-    
-    try {
-        if (isTokenValid()) {
+
+    if ((isTokenValid())) {
+        try {
             // Appel à l'API pour supprimer un projet
             const response = await fetch((url) + modalFigureId, {
                 method: 'DELETE',
@@ -194,7 +194,7 @@ async function RemoveWorks(trashCan) {
 
             if (response.ok) {
 
-            
+
                 if (modalFigureId) {
                     modalFigure.remove();
                 }
@@ -208,17 +208,19 @@ async function RemoveWorks(trashCan) {
             } else {
                 console.log('Impossible de supprimer');
             }
-        } else {
-            throw new Error('Token non trouvé');
+
+        } catch (error) {
+            console.log('Erreur lors de la suppression', error);
         }
-    } catch (error) {
-        console.log('Erreur lors de la suppression', error);
+    } else {
+        throw new Error('Token non trouvé');
     }
+
 }
 
 
 //fonction qui permet d'ouvrir la modale 2
-function openModal2() {
+async function openModal2() {
     //faire disparaitre la modale 1
     const target = document.querySelector('.content-modal');
     target.style.display = 'none';
@@ -226,6 +228,9 @@ function openModal2() {
     //faire apparaitre la modale 2
     const modal2 = document.querySelector(".content-modal2");
     modal2.style.display = 'flex';
+
+    //créer les catégories
+    await createCategories();
 
     // Envoyer le formulaire à l'api
     postDataWorks();
@@ -250,12 +255,12 @@ function postDataWorks() {
         // Récupérer les valeurs du formulaire
         const title = document.getElementById("title").value.trim();
         const imageFile = document.getElementById("image").files[0];
-        const category = parseInt(document.getElementById("category").value.trim());
+        const categoryId = parseInt(document.getElementById("category").value.trim());
 
         // Création de l'objet
         const formData = new FormData();
         formData.append("title", title);
-        formData.append("category", category);
+        formData.append("category", categoryId);
         formData.append("image", imageFile);
 
         try {
@@ -283,6 +288,45 @@ function postDataWorks() {
     document.getElementById("image").addEventListener("change", colorValidationButton);
     document.getElementById("title").addEventListener("input", colorValidationButton);
     document.getElementById("category").addEventListener("change", colorValidationButton);
+}
+
+async function createCategories() {
+    const url = config.url_categories;
+    try {
+        const response = await fetch(url);
+
+        if (response.ok) {
+            const categories = await response.json();
+
+            const labelCategory = document.getElementById('category-label');
+
+            // Création du select 
+            let select = document.createElement('select');
+            select.name = 'category';
+            select.id = 'category'
+            select.required = true;
+            
+            labelCategory.appendChild(select);
+
+            let blankOption = document.createElement('option');
+            blankOption.value = '';
+            blankOption.textContent = '';
+
+            select.appendChild(blankOption);
+
+            categories.forEach((category) => {
+                let options = document.createElement('option');
+                options.value = category.id;
+                options.textContent = category.name;
+                select.appendChild(options);
+            })
+        } else {
+            throw new Error('catégories non trouvées', error);
+        }
+    }
+    catch (error) {
+        console.error('Erreur lors de la récupération des filtres', error);
+    }
 }
 
 //permet de prévisualider l'image 

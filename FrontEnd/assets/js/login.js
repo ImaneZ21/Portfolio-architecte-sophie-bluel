@@ -83,9 +83,7 @@ async function postData() {
             //récupération du token
             const dataLogin = await response.json();
             const token = dataLogin.token;
-            const userId = dataLogin.userId;
             window.localStorage.setItem("token", token);
-            window.localStorage.setItem('user', userId );
 
             //redirection
             window.location.href = './index.html';
