@@ -127,6 +127,7 @@ async function fetchWorks() {
 //Afficher les projets
 async function displayWorks() {
     const galleryElement = document.querySelector('.works-modal');
+    //Récupérer les projets
     const works = await fetchWorks();
 
     //réinitialiser les projets
@@ -150,7 +151,6 @@ async function displayWorks() {
 
         galleryElement.appendChild(figureCard);
     });
-
 }
 
 // Permet de supprimer un projet au clic
@@ -194,7 +194,6 @@ async function RemoveWorks(trashCan) {
 
             if (response.ok) {
 
-
                 if (modalFigureId) {
                     modalFigure.remove();
                 }
@@ -202,7 +201,6 @@ async function RemoveWorks(trashCan) {
                 if (workFigure) {
                     workFigure.remove();
                     console.log(workFigure);
-                    console.log('yes')
                 }
 
             } else {
@@ -239,16 +237,16 @@ async function openModal2() {
     modal2.querySelector('.js-modal-close').addEventListener('click', closeModalButton)
 }
 
-//Permet d'envoyer les informations du formulaire à l'api et de créer les nouveaux projets
+// Permet d'envoyer les informations du formulaire à l'api et de créer les nouveaux projets
 function postDataWorks() {
     const formWorks = document.getElementById("formWorks");
     const token = localStorage.getItem("token");
     const url = config.url_works;
 
-    //prévisualisation de l'image
+    // Prévisualisation de l'image
     previsualisationImage();
 
-    //Event listener sur le bouton submit
+    // Event listener sur le bouton submit
     formWorks.addEventListener("submit", async (event) => {
         event.preventDefault();
 
@@ -274,11 +272,34 @@ function postDataWorks() {
             });
 
             if (response.ok) {
-                //Redirection vers la homepage
-                window.location.href = './index.html';
+                const work = await response.json();
+                const galleryElement = document.querySelector('.gallery');
+
+                // Création de la figure
+                const figureCard = document.createElement('figure');
+                figureCard.setAttribute('figure-id', work.id);
+
+                // Création de l'image
+                const image = document.createElement('img');
+                image.src = work.imageUrl;
+                image.setAttribute('worksCategory-id', work.categoryId);
+
+                // Création du figcaption
+                const title = document.createElement('figcaption');
+                title.textContent = work.title;
+
+                // AppendChild
+                figureCard.appendChild(image);
+                figureCard.appendChild(title);
+                galleryElement.appendChild(figureCard);
+
+                // Réinitialisation du form
+                formWorks.reset();
+
             } else {
                 throw new Error(" Echec liée au formulaire");
             }
+            
         } catch (error) {
             alert("erreur liée à l'api");
         }
@@ -297,7 +318,6 @@ async function createCategories() {
 
         if (response.ok) {
             const categories = await response.json();
-
             const labelCategory = document.getElementById('category-label');
 
             // Création du select 
@@ -305,15 +325,17 @@ async function createCategories() {
             select.name = 'category';
             select.id = 'category'
             select.required = true;
-            
+
             labelCategory.appendChild(select);
 
+            // Création de l'option vide pa défaut 
             let blankOption = document.createElement('option');
             blankOption.value = '';
             blankOption.textContent = '';
 
             select.appendChild(blankOption);
 
+            // Création des options 
             categories.forEach((category) => {
                 let options = document.createElement('option');
                 options.value = category.id;
@@ -333,7 +355,6 @@ async function createCategories() {
 function previsualisationImage() {
     const imageInput = document.getElementById("image");
     const imagePreview = document.getElementById("imagePreviewImg");
-
 
     //Event Listener lorsque les valeurs du formulaire sont modifiées
     imageInput.addEventListener("change", () => {
