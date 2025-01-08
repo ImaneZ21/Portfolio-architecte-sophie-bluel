@@ -47,15 +47,18 @@ function addModifyButton() {
 
     //ouverture de la modale au click
     document.querySelectorAll('.js-modal').forEach(a => {
-        a.addEventListener('click', openModal)
+        a.addEventListener('click', openModal1)
     })
 }
 
 let modal = null
 
 //Permet d'ouvrir la modale
-async function openModal(e) {
+async function openModal1(e) {
     e.preventDefault()
+
+    const modal1 = document.querySelector('.content-modal');
+    modal1.style.display = 'flex';
 
     //faire apparaitre la modale 1
     const target = document.querySelector(e.target.getAttribute('href'));
@@ -87,18 +90,26 @@ async function openModal(e) {
 function closeModalButton(e) {
     if (modal === null) {
         return;
-    } else {
-        e.preventDefault()
-        modal.style.display = "none"
-        modal.setAttribute('aria-hidden', 'true')
-        modal.setAttribute('aria-modal', 'false')
-        modal.removeEventListener('click', closeModalButton)
-        modal.querySelector('.js-modal-close').removeEventListener('click', closeModalButton)
-        modal.querySelector('.js-modal-stop').removeEventListener('click', stopPropagation)
-
-        //réinitialiser la modale
-        modal = null
     }
+    e.preventDefault();
+
+    resetModal2();
+
+    // Réinitialiser l'état des modales
+    let modal2 = document.querySelector('.content-modal2');
+    modal.style.display = "none";
+    modal2.style.display = "none";
+    modal.setAttribute('aria-hidden', 'true');
+    modal.setAttribute('aria-modal', 'false');
+
+    // Fonction permettant de fermer les modales
+    modal.removeEventListener('click', closeModalButton)
+    modal.querySelector('.js-modal-close').removeEventListener('click', closeModalButton)
+    modal.querySelector('.js-modal-stop').removeEventListener('click', stopPropagation)
+    modal2.querySelector('.js-modal-close').addEventListener('click', closeModalButton)
+
+    // Réinitialiser la modale
+    modal = null;
 }
 
 // Empêcher de cliquer n'importe où pour fermer la modale
@@ -106,10 +117,9 @@ function stopPropagation(e) {
     e.stopPropagation()
 }
 
-//Récupérer les projets
+// Récupérer les projets
 async function fetchWorks() {
     const url = config.url_works;
-
     try {
         const response = await fetch(url);
 
@@ -124,16 +134,19 @@ async function fetchWorks() {
     }
 }
 
-//Afficher les projets
+//Afficher les projets dans la modale 1
 async function displayWorks() {
+
+    // Récupérer la modale
     const galleryElement = document.querySelector('.works-modal');
-    //Récupérer les projets
+
+    // Récupérer les projets
     const works = await fetchWorks();
 
-    //réinitialiser les projets
+    // Réinitialiser les projets
     galleryElement.innerHTML = '';
 
-    //création des projets
+    // Création des projets
     works.forEach((work) => {
         const figureCard = document.createElement('figure');
         figureCard.setAttribute('data-id', work.id);
@@ -161,7 +174,7 @@ function EventListenertoRemoveWorks() {
     trashCans.forEach((trashCan) => {
         //placer un eventListener 
         trashCan.addEventListener('click', () => {
-            //appeler la fonction removeWorks en envoyant l'id
+            //appeler la fonction removeWorks
             RemoveWorks(trashCan);
         })
     })
@@ -177,7 +190,7 @@ async function RemoveWorks(trashCan) {
     const modalFigureId = modalFigure.getAttribute('data-id');
 
     // Retrouve l'ID du parent dans la gallery
-    const workFigure = document.querySelector(
+    const workGalleryFigure = document.querySelector(
         'figure[figure-id="' + modalFigureId + '"]'
     );
 
@@ -191,34 +204,34 @@ async function RemoveWorks(trashCan) {
                     'Authorization': `Bearer ${token}`,
                 },
             });
-
             if (response.ok) {
 
+                // supprimer le work de la modale
                 if (modalFigureId) {
                     modalFigure.remove();
                 }
 
-                if (workFigure) {
-                    workFigure.remove();
-                    console.log(workFigure);
+                // supprimer le work de la gallery
+                if (workGalleryFigure) {
+                    workGalleryFigure.remove();
                 }
 
             } else {
                 console.log('Impossible de supprimer');
             }
-
         } catch (error) {
             console.log('Erreur lors de la suppression', error);
         }
     } else {
         throw new Error('Token non trouvé');
     }
-
 }
 
 
 //fonction qui permet d'ouvrir la modale 2
-async function openModal2() {
+async function openModal2(e) {
+    e.preventDefault()
+
     //faire disparaitre la modale 1
     const target = document.querySelector('.content-modal');
     target.style.display = 'none';
@@ -235,7 +248,43 @@ async function openModal2() {
 
     //fermer la modale 2
     modal2.querySelector('.js-modal-close').addEventListener('click', closeModalButton)
+
+    // Revenir sur la modale 1
+    goBackModal1();
+
 }
+
+function resetModal2() {
+
+    // Réinitialiser le formulaire de la modale 2
+    const formWorks = document.getElementById("formWorks");
+    if (formWorks) {
+        formWorks.reset();
+    }
+
+    // Réinitialiser la prévisualisation de l'image de la modale 2
+    const imagePreview = document.getElementById("imagePreviewImg");
+    const addPictureButton = document.getElementById("add-picture");
+    const paragraph = document.getElementById("file-info");
+    if (imagePreview) {
+        imagePreview.src = './assets/icons/placeholder.png';
+        addPictureButton.style.display = 'unset'
+        paragraph.style.display = 'unset'
+    }
+}
+
+function goBackModal1() {
+    const arrow = document.querySelector('.fa-arrow-left');
+
+    arrow.addEventListener('click', () => {
+        const modal1 = document.querySelector(".content-modal");
+        const modal2 = document.querySelector(".content-modal2");
+        modal1.style.display = 'flex';
+        modal2.style.display = 'none';
+        resetModal2()
+    })
+}
+
 
 // Permet d'envoyer les informations du formulaire à l'api et de créer les nouveaux projets
 function postDataWorks() {
@@ -293,13 +342,10 @@ function postDataWorks() {
                 figureCard.appendChild(title);
                 galleryElement.appendChild(figureCard);
 
-                // Réinitialisation du form
-                formWorks.reset();
-
             } else {
                 throw new Error(" Echec liée au formulaire");
             }
-            
+
         } catch (error) {
             alert("erreur liée à l'api");
         }
@@ -317,8 +363,15 @@ async function createCategories() {
         const response = await fetch(url);
 
         if (response.ok) {
-            const categories = await response.json();
+            let categories = await response.json();
+
             const labelCategory = document.getElementById('category-label');
+
+            // Vérifier si le select existe 
+            const existSelect = document.getElementById('category');
+            if (existSelect) {
+                existSelect.remove();
+            }
 
             // Création du select 
             let select = document.createElement('select');
@@ -363,7 +416,7 @@ function previsualisationImage() {
         const paragraph = document.getElementById("file-info");
         const errorElement = document.querySelector(".error-messages");
 
-        // Réinitialisez les erreurs
+        // Réinitialiser les erreurs
         errorElement.style.display = "none";
 
         //contrôle sur la taille de l'image
@@ -384,10 +437,6 @@ function previsualisationImage() {
 
             addPictureButton.style.display = "none";
             paragraph.style.display = "none";
-
-        } else {
-
-            imagePreview.style.display = "none";
         }
     });
 }
@@ -398,7 +447,7 @@ function colorValidationButton() {
     const category = document.getElementById("category");
     const validateButton = document.querySelector("form .add-picture-modal[type='submit']");
 
-    if (image.files && image.files.length > 0 && title.value.trim().length > 0 && category.value.trim().length > 0) {
+    if (image.files && title.value.trim().length > 0 && category.value.trim().length > 0) {
         validateButton.style.backgroundColor = "#1D6154";
     }
 }
