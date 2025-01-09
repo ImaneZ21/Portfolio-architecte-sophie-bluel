@@ -93,9 +93,10 @@ function closeModalButton(e) {
     }
     e.preventDefault();
 
+    // // Réinitialiser la modale 2
     resetModal2();
 
-    // Réinitialiser l'état des modales
+    // Modifier le style des modales
     let modal2 = document.querySelector('.content-modal2');
     modal.style.display = "none";
     modal2.style.display = "none";
@@ -106,7 +107,6 @@ function closeModalButton(e) {
     modal.removeEventListener('click', closeModalButton)
     modal.querySelector('.js-modal-close').removeEventListener('click', closeModalButton)
     modal.querySelector('.js-modal-stop').removeEventListener('click', stopPropagation)
-    modal2.querySelector('.js-modal-close').addEventListener('click', closeModalButton)
 
     // Réinitialiser la modale
     modal = null;
@@ -176,6 +176,7 @@ function EventListenertoRemoveWorks() {
         trashCan.addEventListener('click', () => {
             //appeler la fonction removeWorks
             RemoveWorks(trashCan);
+            trashCan.removeEventListener('click', RemoveWorks);
         })
     })
 }
@@ -240,6 +241,9 @@ async function openModal2(e) {
     const modal2 = document.querySelector(".content-modal2");
     modal2.style.display = 'flex';
 
+     // Réinitialisation de la modale 2
+     resetModal2();
+
     //créer les catégories
     await createCategories();
 
@@ -249,17 +253,18 @@ async function openModal2(e) {
     //fermer la modale 2
     modal2.querySelector('.js-modal-close').addEventListener('click', closeModalButton)
 
-    // Revenir sur la modale 1
+    // // Revenir sur la modale 1
     goBackModal1();
 
 }
-
+// Permet de réinitialiser la modale 2 
 function resetModal2() {
 
     // Réinitialiser le formulaire de la modale 2
     const formWorks = document.getElementById("formWorks");
     if (formWorks) {
         formWorks.reset();
+        formWorks.removeEventListener('submit', eventListenerSubmitWorks);
     }
 
     // Réinitialiser la prévisualisation de l'image de la modale 2
@@ -271,8 +276,14 @@ function resetModal2() {
         addPictureButton.style.display = 'unset'
         paragraph.style.display = 'unset'
     }
+
+    // Réinitialiser la couleur du bouton de validation 
+    const validateButton = document.querySelector("form .add-picture-modal[type='submit']");
+    validateButton.style.backgroundColor = "#A6A6A6";
+
 }
 
+// Permet de revenir sur la modale 1 à l'aide de la flêche
 function goBackModal1() {
     const arrow = document.querySelector('.fa-arrow-left');
 
@@ -281,19 +292,30 @@ function goBackModal1() {
         const modal2 = document.querySelector(".content-modal2");
         modal1.style.display = 'flex';
         modal2.style.display = 'none';
-        resetModal2()
     })
+    resetModal2()
 }
-
 
 // Permet d'envoyer les informations du formulaire à l'api et de créer les nouveaux projets
 function postDataWorks() {
-    const formWorks = document.getElementById("formWorks");
-    const token = localStorage.getItem("token");
-    const url = config.url_works;
 
     // Prévisualisation de l'image
     previsualisationImage();
+
+    // Ecouteur sur le bouton submit et envoi des works vers l'api
+    eventListenerSubmitWorks()
+
+    //modifier la couleur du boutton de validation
+    document.getElementById("image").addEventListener("change", colorValidationButton);
+    document.getElementById("title").addEventListener("input", colorValidationButton);
+    document.getElementById("category").addEventListener("change", colorValidationButton);
+
+}
+
+function eventListenerSubmitWorks(){
+    const formWorks = document.getElementById("formWorks");
+    const token = localStorage.getItem("token");
+    const url = config.url_works;
 
     // Event listener sur le bouton submit
     formWorks.addEventListener("submit", async (event) => {
@@ -342,6 +364,8 @@ function postDataWorks() {
                 figureCard.appendChild(title);
                 galleryElement.appendChild(figureCard);
 
+                resetModal2();
+
             } else {
                 throw new Error(" Echec liée au formulaire");
             }
@@ -350,13 +374,11 @@ function postDataWorks() {
             alert("erreur liée à l'api");
         }
     });
-
-    //modifier la couleur du boutton de validation
-    document.getElementById("image").addEventListener("change", colorValidationButton);
-    document.getElementById("title").addEventListener("input", colorValidationButton);
-    document.getElementById("category").addEventListener("change", colorValidationButton);
 }
 
+
+
+// Permet de créer les catégories
 async function createCategories() {
     const url = config.url_categories;
     try {
@@ -423,6 +445,7 @@ function previsualisationImage() {
         if (imageFile.size > 4 * 1024 * 1024) {
             errorElement.style.display = 'unset',
                 errorElement.textContent = "Le fichier doit contenir 4mo max";
+
             return;
         }
 
@@ -447,7 +470,9 @@ function colorValidationButton() {
     const category = document.getElementById("category");
     const validateButton = document.querySelector("form .add-picture-modal[type='submit']");
 
-    if (image.files && title.value.trim().length > 0 && category.value.trim().length > 0) {
+    if (image.files && image.files.length > 0 && title.value.trim().length > 0 && category.value.trim().length > 0) {
         validateButton.style.backgroundColor = "#1D6154";
+    } else {
+        validateButton.style.backgroundColor = "#A6A6A6";
     }
 }
