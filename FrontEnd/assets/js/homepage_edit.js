@@ -1,6 +1,6 @@
 import * as config from "./config.js";
 
-//Permet de récupérer le token et vérifier sa validité
+// Permet de récupérer le token et vérifier sa validité
 function isTokenValid() {
     const token = localStorage.getItem("token");
     if (token) {
@@ -22,7 +22,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 })
 
-//Permet de modifier le bouton login en logout et d'être redirigé vers la page de connexion
+// Permet de modifier le bouton login en logout et d'être redirigé vers la page de connexion
 function logout() {
     const login = document.getElementById('login');
     login.id = 'logout';
@@ -36,16 +36,16 @@ function logout() {
     })
 }
 
-//Permet d'ajouter le bouton modifier
+// Permet d'ajouter le bouton modifier
 function addModifyButton() {
     const modifyFont = document.querySelector(".title i");
     const modifyText = document.querySelector(".button");
 
-    //faire figurer le style
+    // Faire figurer le style
     modifyFont.style.display = 'unset'
     modifyText.style.display = 'unset'
 
-    //ouverture de la modale au click
+    // Ouverture de la modale au click
     document.querySelectorAll('.js-modal').forEach(a => {
         a.addEventListener('click', openModal1)
     })
@@ -86,14 +86,14 @@ async function openModal1(e) {
     EventListenertoRemoveWorks();
 }
 
-//Permet de fermer la modale
+// Permet de fermer la modale
 function closeModalButton(e) {
     if (modal === null) {
         return;
     }
     e.preventDefault();
 
-    // // Réinitialiser la modale 2
+    // Réinitialiser la modale 2
     resetModal2();
 
     // Modifier le style des modales
@@ -241,8 +241,8 @@ async function openModal2(e) {
     const modal2 = document.querySelector(".content-modal2");
     modal2.style.display = 'flex';
 
-     // Réinitialisation de la modale 2
-     resetModal2();
+    // Réinitialisation de la modale 2
+    resetModal2();
 
     //créer les catégories
     await createCategories();
@@ -250,10 +250,10 @@ async function openModal2(e) {
     // Envoyer le formulaire à l'api
     postDataWorks();
 
-    //fermer la modale 2
+    // Fermer la modale 2
     modal2.querySelector('.js-modal-close').addEventListener('click', closeModalButton)
 
-    // // Revenir sur la modale 1
+    // Revenir sur la modale 1
     goBackModal1();
 
 }
@@ -312,71 +312,77 @@ function postDataWorks() {
 
 }
 
-function eventListenerSubmitWorks(){
+
+// Fonction pour ajouter l'écouteur d'événement
+function eventListenerSubmitWorks() {
     const formWorks = document.getElementById("formWorks");
-    const token = localStorage.getItem("token");
-    const url = config.url_works;
-
-    // Event listener sur le bouton submit
-    formWorks.addEventListener("submit", async (event) => {
-        event.preventDefault();
-
-        // Récupérer les valeurs du formulaire
-        const title = document.getElementById("title").value.trim();
-        const imageFile = document.getElementById("image").files[0];
-        const categoryId = parseInt(document.getElementById("category").value.trim());
-
-        // Création de l'objet
-        const formData = new FormData();
-        formData.append("title", title);
-        formData.append("category", categoryId);
-        formData.append("image", imageFile);
-
-        try {
-            // Envoyer la requête POST
-            const response = await fetch((url), {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                },
-                body: formData,
-            });
-
-            if (response.ok) {
-                const work = await response.json();
-                const galleryElement = document.querySelector('.gallery');
-
-                // Création de la figure
-                const figureCard = document.createElement('figure');
-                figureCard.setAttribute('figure-id', work.id);
-
-                // Création de l'image
-                const image = document.createElement('img');
-                image.src = work.imageUrl;
-                image.setAttribute('worksCategory-id', work.categoryId);
-
-                // Création du figcaption
-                const title = document.createElement('figcaption');
-                title.textContent = work.title;
-
-                // AppendChild
-                figureCard.appendChild(image);
-                figureCard.appendChild(title);
-                galleryElement.appendChild(figureCard);
-
-                resetModal2();
-
-            } else {
-                throw new Error(" Echec liée au formulaire");
-            }
-
-        } catch (error) {
-            alert("erreur liée à l'api");
-        }
-    });
+    // On retire d'abord l'ancien écouteur pour éviter les doublons
+    formWorks.removeEventListener("submit", submitHandler);
+    // Puis on ajoute le nouveau
+    formWorks.addEventListener("submit", submitHandler);
 }
 
 
+let submitHandler = async (event) => {
+    event.preventDefault();
+
+    const token = localStorage.getItem("token");
+    const url = config.url_works;
+
+    // Récupérer les valeurs du formulaire
+    const title = document.getElementById("title").value.trim();
+    const imageFile = document.getElementById("image").files[0];
+    const categoryId = parseInt(document.getElementById("category").value.trim());
+
+    // Création de l'objet
+    const formData = new FormData();
+    formData.append("title", title);
+    formData.append("category", categoryId);
+    formData.append("image", imageFile);
+
+    try {
+        // Envoyer la requête POST
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+            },
+            body: formData,
+        });
+
+        if (response.ok) {
+            const work = await response.json();
+            const galleryElement = document.querySelector('.gallery');
+
+            // Création de la figure
+            const figureCard = document.createElement('figure');
+            figureCard.setAttribute('figure-id', work.id);
+
+            // Création de l'image
+            const image = document.createElement('img');
+            image.src = work.imageUrl;
+            image.setAttribute('worksCategory-id', work.categoryId);
+
+            // Création du figcaption
+            const title = document.createElement('figcaption');
+            title.textContent = work.title;
+
+            // AppendChild
+            figureCard.appendChild(image);
+            figureCard.appendChild(title);
+            galleryElement.appendChild(figureCard);
+
+            // Fermer la modale et réinitialiser le formulaire
+            resetModal2();
+            
+        } else {
+            throw new Error("Echec lié au formulaire");
+        }
+
+    } catch (error) {
+        alert("erreur liée à l'api");
+    }
+};
 
 // Permet de créer les catégories
 async function createCategories() {
@@ -457,13 +463,13 @@ function previsualisationImage() {
                 imagePreview.style.display = "flex";
             };
             reader.readAsDataURL(imageFile);
-
             addPictureButton.style.display = "none";
             paragraph.style.display = "none";
         }
     });
 }
 
+// Permet de modifier la couleur du bouton de validation en fonction du remplissage des champs
 function colorValidationButton() {
     const image = document.getElementById("image");
     const title = document.getElementById("title");
