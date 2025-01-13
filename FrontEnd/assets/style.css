@@ -332,7 +332,7 @@ a:hover {
 	grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
 	grid-row-gap: 10px;
 	margin: 5%;
-	border-bottom: 1px #1D6154 solid;
+	border-bottom: 1px black solid;
 	padding-bottom: 5%;
 }
 
@@ -366,7 +366,7 @@ form select{
 
 .content-modal2 h3 {
 	font-size: 26px;
-	margin: 30px 0;
+	margin: 17px 0;
 	color: #000;
 }
 
@@ -379,7 +379,7 @@ form select{
 }
 
 .modal-add-picture {
-	height: 185px;
+	height: 220px;
 	background-color: #e8f1f7;
 	border-radius: 3px;
 	display: flex;
@@ -392,13 +392,20 @@ form select{
 
 
 #add-picture{
-	padding: 20px;
+	padding: 15px 30px;
     cursor: pointer;
     background-color: #d0d7df;
     border-radius: 30px;
     font-size: 14px;
     border: none;
-    margin: 15px 0;
+    margin: 5px 0;
+	color: #2F6B8C;
+	font-weight: 700;
+}
+
+#file-info{
+	font-weight: 100;
+	font-size: smaller;
 }
 
 #image{
@@ -411,21 +418,28 @@ form select{
     width: 80%;
 }
 
-.content-modal label {
-	margin-top: 2em;
-}
-
 .file-info{
 	font-size: 12px;
 	color: #7a8c99;
 }
 
 #imagePreviewImg{
-	width: 140px;
+	width: 165px;
+}
+
+#category-label{
+	border-bottom: 1px black solid;
+	padding-bottom: 7%;
+}
+#category{
+	margin-top: 1em;
 }
 
 form .add-picture-modal[type="submit"] {
 	background-color: #A6A6A6;
+	margin-top: 15px;
+	text-align: center;
+	padding : 0;
 }
 
 form select, 
@@ -511,8 +525,7 @@ input[type="text"]{
 
 #contact label,
 #login label,
-.content-modal2 label,
-.content-modal2 select {
+.content-modal2 label {
 	margin: 2em 0 1em 0;
 }
 

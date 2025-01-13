@@ -1,9 +1,8 @@
 import * as config from "./config.js";
 
-//Permet d'appeler l'api afin de récupérer la gallery
+// Permet d'appeler l'api afin de récupérer la gallery
 export async function fetchWorks() {
     const url = config.url_works;
-
     try {
         const response = await fetch(url);
 
@@ -18,7 +17,7 @@ export async function fetchWorks() {
     }
 }
 
-//Permet de créer la gallery
+// Permet de créer la gallery
 export function createWorks(works) {
 
     const galleryElement = document.querySelector('.gallery');

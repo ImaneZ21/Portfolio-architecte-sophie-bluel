@@ -53,36 +53,36 @@ function addModifyButton() {
 
 let modal = null
 
-//Permet d'ouvrir la modale
+// Permet d'ouvrir la modale
 async function openModal1(e) {
     e.preventDefault()
 
     const modal1 = document.querySelector('.content-modal');
     modal1.style.display = 'flex';
 
-    //faire apparaitre la modale 1
+    // Faire apparaitre la modale 1
     const target = document.querySelector(e.target.getAttribute('href'));
     target.style.display = 'flex'
     target.setAttribute('aria-hidden', 'false')
     target.setAttribute('aria-modal', 'true')
     modal = target
 
-    //ajout des projets
+    // Ajout des projets
     await displayWorks();
 
-    //faire disparaitre la modale 2
+    // Faire disparaitre la modale 2
     const modal2 = document.querySelector(".content-modal2");
     modal2.style.display = 'none'
 
-    //Transfert vers la seconde modale
+    // Transfert vers la seconde modale
     modal.querySelector('.add-picture-modal').addEventListener('click', openModal2)
 
-    // ajout évènement pour fermer la modale
+    // Ajout évènement pour fermer la modale
     modal.addEventListener('click', closeModalButton)
     modal.querySelector('.js-modal-close').addEventListener('click', closeModalButton)
     modal.querySelector('.js-modal-stop').addEventListener('click', stopPropagation)
 
-    //Event listener sur les trashCan
+    // Event listener sur les trashCan
     EventListenertoRemoveWorks();
 }
 
@@ -134,7 +134,7 @@ async function fetchWorks() {
     }
 }
 
-//Afficher les projets dans la modale 1
+// Afficher les projets dans la modale 1
 async function displayWorks() {
 
     // Récupérer la modale
@@ -168,13 +168,13 @@ async function displayWorks() {
 
 // Permet de supprimer un projet au clic
 function EventListenertoRemoveWorks() {
-    //parcours les poubelles pour placer les eventsListeners
+    // Parcours les poubelles pour placer les eventsListeners
     const trashCans = document.querySelectorAll('.fa-solid.fa-trash-can');
 
     trashCans.forEach((trashCan) => {
-        //placer un eventListener 
+        // Placer un eventListener 
         trashCan.addEventListener('click', () => {
-            //appeler la fonction removeWorks
+            // Appeler la fonction removeWorks
             RemoveWorks(trashCan);
             trashCan.removeEventListener('click', RemoveWorks);
         })
@@ -190,7 +190,7 @@ async function RemoveWorks(trashCan) {
     const modalFigure = trashCan.closest('figure');
     const modalFigureId = modalFigure.getAttribute('data-id');
 
-    // Retrouve l'ID du parent dans la gallery
+    // Retrouver l'ID du parent dans la gallery
     const workGalleryFigure = document.querySelector(
         'figure[figure-id="' + modalFigureId + '"]'
     );
@@ -207,12 +207,12 @@ async function RemoveWorks(trashCan) {
             });
             if (response.ok) {
 
-                // supprimer le work de la modale
+                // Supprimer le work de la modale
                 if (modalFigureId) {
                     modalFigure.remove();
                 }
 
-                // supprimer le work de la gallery
+                // Supprimer le work de la gallery
                 if (workGalleryFigure) {
                     workGalleryFigure.remove();
                 }
@@ -233,18 +233,18 @@ async function RemoveWorks(trashCan) {
 async function openModal2(e) {
     e.preventDefault()
 
-    //faire disparaitre la modale 1
+    // Faire disparaitre la modale 1
     const target = document.querySelector('.content-modal');
     target.style.display = 'none';
 
-    //faire apparaitre la modale 2
+    // Faire apparaitre la modale 2
     const modal2 = document.querySelector(".content-modal2");
     modal2.style.display = 'flex';
 
     // Réinitialisation de la modale 2
     resetModal2();
 
-    //créer les catégories
+    // Créer les catégories
     await createCategories();
 
     // Envoyer le formulaire à l'api
@@ -264,7 +264,6 @@ function resetModal2() {
     const formWorks = document.getElementById("formWorks");
     if (formWorks) {
         formWorks.reset();
-        formWorks.removeEventListener('submit', eventListenerSubmitWorks);
     }
 
     // Réinitialiser la prévisualisation de l'image de la modale 2
@@ -293,7 +292,9 @@ function goBackModal1() {
         modal1.style.display = 'flex';
         modal2.style.display = 'none';
     })
-    resetModal2()
+
+    resetModal2();
+
 }
 
 // Permet d'envoyer les informations du formulaire à l'api et de créer les nouveaux projets
@@ -317,13 +318,13 @@ function postDataWorks() {
 function eventListenerSubmitWorks() {
     const formWorks = document.getElementById("formWorks");
     // On retire d'abord l'ancien écouteur pour éviter les doublons
-    formWorks.removeEventListener("submit", submitHandler);
+    formWorks.removeEventListener("submit", submitWorks);
     // Puis on ajoute le nouveau
-    formWorks.addEventListener("submit", submitHandler);
+    formWorks.addEventListener("submit", submitWorks);
 }
 
 
-let submitHandler = async (event) => {
+let submitWorks = async (event) => {
     event.preventDefault();
 
     const token = localStorage.getItem("token");
@@ -374,7 +375,10 @@ let submitHandler = async (event) => {
 
             // Fermer la modale et réinitialiser le formulaire
             resetModal2();
-            
+
+            // Appeler la fonction displayWorks
+            await displayWorks(work);
+        
         } else {
             throw new Error("Echec lié au formulaire");
         }
@@ -409,7 +413,7 @@ async function createCategories() {
 
             labelCategory.appendChild(select);
 
-            // Création de l'option vide pa défaut 
+            // Création de l'option vide par défaut 
             let blankOption = document.createElement('option');
             blankOption.value = '';
             blankOption.textContent = '';
@@ -432,12 +436,12 @@ async function createCategories() {
     }
 }
 
-//permet de prévisualider l'image 
+// Permet de prévisualider l'image 
 function previsualisationImage() {
     const imageInput = document.getElementById("image");
     const imagePreview = document.getElementById("imagePreviewImg");
 
-    //Event Listener lorsque les valeurs du formulaire sont modifiées
+    // Event Listener lorsque les valeurs du formulaire sont modifiées
     imageInput.addEventListener("change", () => {
         const imageFile = document.getElementById("image").files[0];
         const addPictureButton = document.getElementById("add-picture");
@@ -447,7 +451,7 @@ function previsualisationImage() {
         // Réinitialiser les erreurs
         errorElement.style.display = "none";
 
-        //contrôle sur la taille de l'image
+        // Contrôle sur la taille de l'image
         if (imageFile.size > 4 * 1024 * 1024) {
             errorElement.style.display = 'unset',
                 errorElement.textContent = "Le fichier doit contenir 4mo max";
@@ -455,7 +459,7 @@ function previsualisationImage() {
             return;
         }
 
-        //rendre visible l'image
+        // Rendre visible l'image
         if (imageFile) {
             const reader = new FileReader();
             reader.onload = function (e) {

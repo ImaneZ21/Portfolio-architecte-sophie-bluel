@@ -1,19 +1,20 @@
 import * as config from "./config.js";
 
+// Permet de se connecter
 function loginForm() {
     const formLogin = document.querySelector("#form-login");
 
     formLogin.addEventListener("submit", (event) => {
-        //Empêchement du rechargement de la page
+        // Empêchement du rechargement de la page
         event.preventDefault();
 
-        //Récupération des valeurs
+        // Récupération des valeurs
         const getEmail = document.getElementById("email");
         const getPassword = document.getElementById("password");
         email = getEmail.value.trim();
         password = getPassword.value.trim();
 
-        //Vérification du contenu
+        // Vérification du contenu
         if (email === "" || password === "") {
             const errorElement = document.querySelector(".error-messages")
             errorElement.style.display = 'unset',
@@ -22,22 +23,23 @@ function loginForm() {
             return;
         }
 
-        //Vérification du regex
+        // Vérification du regex
         if (checkLogin(email, password) === false) {
+
             return;
         }
 
-        //Envoi des données vers l'api
+        // Envoi des données vers l'api
         postData();
 
     });
 }
 
-loginForm()
+loginForm();
 
-//Permet de vérifier la validité du login
+// Permet de vérifier la validité du login
 function checkLogin(email, password) {
-    //Vérification E-mail
+    // Vérification E-mail
     let regex = new RegExp("^[a-z0-9._-]+@[a-z0-9._-]+\.[a-z]+$");
     const errorElement = document.querySelector(".error-messages")
     if (!regex.test(email)) {
@@ -47,7 +49,7 @@ function checkLogin(email, password) {
         return false;
     }
 
-    //vérification password
+    // Vérification password
     regex = new RegExp("^[a-zA-Z0-9._-]{5,}$")
     if (!regex.test(password)) {
         errorElement.style.display = 'unset',
@@ -59,7 +61,7 @@ function checkLogin(email, password) {
     return true;
 }
 
-//Permet d'envoyer les données à l'api et de rediriger vers la homepage
+// Permet d'envoyer les données à l'api et de rediriger vers la homepage
 async function postData() {
     const url_login = config.url_login;
     const errorElement = document.querySelector(".error-messages")
@@ -80,12 +82,12 @@ async function postData() {
         });
 
         if (response.ok) {
-            //récupération du token
+            // Récupération du token
             const dataLogin = await response.json();
             const token = dataLogin.token;
             window.localStorage.setItem("token", token);
 
-            //redirection
+            // Redirection
             window.location.href = './index.html';
         } else {
             errorElement.style.display = 'unset',
