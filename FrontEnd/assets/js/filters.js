@@ -68,14 +68,24 @@ function addEventListenersFilters() {
             const works = await fetchWorks();
             const categoryId = button.getAttribute('data-category-id');
 
+            // Réinitialise la couleur des boutons
+            filterButtons.forEach(btn => btn.classList.remove('selected-button'));
+
+            // Appliquer la couleur qu'au bouton sélectionné
+            button.classList.add('selected-button');
+         
+
             if (categoryId !== 'all') {
                 document.querySelector(".gallery").innerHTML = "";
                 const filteredWorks = works.filter(work => work.categoryId === parseInt(categoryId));
-                createWorks(filteredWorks)
+                createWorks(filteredWorks);
+              
             }else{
                 document.querySelector(".gallery").innerHTML = "";
                 createWorks(works)
             }
+
+          
         });
     });
 }

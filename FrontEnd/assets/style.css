@@ -468,7 +468,8 @@ input[type="text"]{
 	font-weight: 600;
 }
 
-.filters button:hover {
+.filters button:hover, 
+.filters button.selected-button {
 	color: white;
 	background: #1D6154;
 }
